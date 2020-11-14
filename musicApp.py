@@ -435,7 +435,38 @@ def addArtist(cursor, connection):
     connection.commit()
     print("Artist \'" + name + "\' was added to the database successfully")
 
+def top10Songs(cursor):
+    """
+    This function returns the top 10 most-played songs in the database.
+    param cursor: used to send queries to the database
+    """
+    query = '''SELECT play_dates.song_id, songs.title, COUNT(play_dates.song_id)
+                FROM play_dates INNER JOIN songs
+                ON play_dates.song_id = songs.song_id
+                GROUP BY play_dates.song_id, songs.title
+                ORDER BY COUNT(play_dates.song_id) DESC, play_dates.song_id'''
+    cursor.execute(query)
+    topSongs = cursor.fetchall()
+    print("\nTop 10 Most-Played Songs:\n");
+    for num in range(0, 10):
+        print("\t#%d - %s - [Play Count: %d]" % ((num + 1), topSongs[num][1], topSongs[num][2]))
+    print("")
+    
+def top10Artists(cursor):
+    """
+    This function returns the top 10 most-played artists in the database.
+    param cursor: used to send queries to the database
+    """
+    print("\nTop 10 Most-Played Artists:\n")
+    print("")
 
+def top10Albums(cursor):
+    """
+    This function returns the top 10 most-played albums in the database.
+    param cursor: used to send queries to the database
+    """
+    print("\nTop 10 Most-Played Albums:\n")
+    print("")
 
 if __name__ == "__main__":
     """
@@ -446,6 +477,11 @@ if __name__ == "__main__":
     print("\nWelcome to Music Player by Straigh Outta Database!")
     user_id = 0
     username = ""
+    # TEST TEST TEST
+    top10Songs(sql_cursor)
+    print("test")
+    exit(0)
+    # TEST TEST TEST
     #Signup or Login
     while True:
         initial = input("\nEnter 'login', 'signup', 'add to database' or 'quit': ")
