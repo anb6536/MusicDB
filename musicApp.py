@@ -44,6 +44,7 @@ def help():
     print("\t'collection add': to add a song, album, artist to your collection")
     print("\t'play': to play a song from the entire library")
     print("\t'add to database': add a song, album or artist to the overall database")
+    print("\t'top 10': retrieve the top 10 most popular songs, albums, or artists in the database")
     print("\t'quit': to exit the application")
     
 
@@ -505,13 +506,6 @@ if __name__ == "__main__":
     print("\nWelcome to Music Player by Straigh Outta Database!")
     user_id = 0
     username = ""
-    # TEST TEST TEST
-    # top10Songs(sql_cursor)
-    # top10Artists(sql_cursor)
-    # top10Albums(sql_cursor)
-    print("test")
-    exit(0)
-    # TEST TEST TEST
     #Signup or Login
     while True:
         initial = input("\nEnter 'login', 'signup', 'add to database' or 'quit': ")
@@ -600,6 +594,21 @@ if __name__ == "__main__":
         elif(command=="play"):
             songName = input("Enter the name of the song to be played: ")
             playSong(songName, sql_cursor, sql_connection, user_id)
+        elif(command=="top 10"):
+            while True:
+                command2 = input("\nEnter 'songs', 'artists', or 'albums': ")
+                if (command2 == "songs"):
+                    top10Songs(sql_cursor)
+                    break
+                elif (command2 == "artists"):
+                    top10Artists(sql_cursor)
+                    break
+                elif (command2 == "albums"):
+                    top10Albums(sql_cursor)
+                    break
+                else:
+                    print("Incorrect Command! Try Again!")
+                    continue
         elif(command=='quit'):
             print("\nApplication Closed Successfully")
             break
