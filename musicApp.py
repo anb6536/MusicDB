@@ -457,7 +457,21 @@ def top10Artists(cursor):
     This function returns the top 10 most-played artists in the database.
     param cursor: used to send queries to the database
     """
+    query = '''SELECT temp.play_count, artists.artist_id, artists.name
+                FROM artists INNER JOIN (
+                    SELECT COUNT(play_dates.song_id) AS play_count, song_artists.artist_id
+                    FROM play_dates INNER JOIN song_artists
+                    ON play_dates.song_id = song_artists.song_id
+                    GROUP BY song_artists.artist_id
+                    ) AS temp
+                ON temp.artist_id = artists.artist_id
+                GROUP BY temp.play_count, artists.artist_id
+                ORDER BY temp.play_count DESC'''
+    cursor.execute(query)
+    topArtists = cursor.fetchall()
     print("\nTop 10 Most-Played Artists:\n")
+    for num in range(0, 10):
+        print("\t#%d - %s - [Total Play Count: %d]" % ((num + 1), topArtists[num][2], topArtists[num][0]))
     print("")
 
 def top10Albums(cursor):
@@ -465,7 +479,21 @@ def top10Albums(cursor):
     This function returns the top 10 most-played albums in the database.
     param cursor: used to send queries to the database
     """
+    query = '''SELECT temp.play_count, albums.album_id, albums.name
+                FROM albums INNER JOIN (
+                    SELECT COUNT(play_dates.song_id) AS play_count, album_songs.album_id
+                    FROM play_dates INNER JOIN album_songs
+                    ON play_dates.song_id = album_songs.song_id
+                    GROUP BY album_songs.album_id
+                    ) AS temp
+                ON temp.album_id = albums.album_id
+                GROUP BY temp.play_count, albums.album_id
+                ORDER BY temp.play_count DESC'''
+    cursor.execute(query)
+    topAlbums = cursor.fetchall()
     print("\nTop 10 Most-Played Albums:\n")
+    for num in range(0, 10):
+        print("\t#%d - %s - [Accumulated Track Plays: %d]" % ((num + 1), topAlbums[num][2], topAlbums[num][0]))
     print("")
 
 if __name__ == "__main__":
@@ -478,7 +506,9 @@ if __name__ == "__main__":
     user_id = 0
     username = ""
     # TEST TEST TEST
-    top10Songs(sql_cursor)
+    # top10Songs(sql_cursor)
+    # top10Artists(sql_cursor)
+    # top10Albums(sql_cursor)
     print("test")
     exit(0)
     # TEST TEST TEST
