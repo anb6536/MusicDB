@@ -651,8 +651,6 @@ if __name__ == "__main__":
     user_id = 0
     username = ""
     #Signup or Login
-    songRecArtist(11, sql_cursor)
-    """
     while True:
         initial = input("\nEnter 'login', 'signup', 'add to database' or 'quit': ")
         if(initial=='login'):
@@ -762,5 +760,5 @@ if __name__ == "__main__":
             print("\nIncorrect command")
             help()
             print("\nTry Again")       
-    """
+    
     close(sql_connection, sql_cursor)
