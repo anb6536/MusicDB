@@ -436,7 +436,7 @@ def addArtist(cursor, connection):
     connection.commit()
     print("Artist \'" + name + "\' was added to the database successfully")
 
-def get_max_song_user(userID, cursor):
+def getMaxSongUser(userID, cursor):
     """
     This function is used to search for and print the top 5 most played songs of a user
     param userID: id of user to search on 
@@ -463,7 +463,7 @@ def get_max_song_user(userID, cursor):
         title = cursor.fetchall()[0][0]
         print(title)
 
-def get_max_artist_user(userID, cursor):
+def getMaxArtistUser(userID, cursor):
     """
     This function is used to search for and print the top 3 most played artists of a user
     param userID: id of user to search on 
@@ -495,7 +495,7 @@ def get_max_artist_user(userID, cursor):
         artist = cursor.fetchall()[0][0]
         print(artist)
 
-def get_max_genre_user(userID, cursor):
+def getMaxGenreUser(userID, cursor):
     """
     This function is used to search for and print the top most played genre of a user
     param userID: id of user to search on 
@@ -600,8 +600,6 @@ if __name__ == "__main__":
     user_id = 0
     username = ""
     #Signup or Login
-    get_max_genre_user(11, sql_cursor)
-    """
     while True:
         initial = input("\nEnter 'login', 'signup', 'add to database' or 'quit': ")
         if(initial=='login'):
@@ -710,7 +708,6 @@ if __name__ == "__main__":
         else:
             print("\nIncorrect command")
             help()
-            print("\nTry Again")
-    """        
+            print("\nTry Again")       
 
     close(sql_connection, sql_cursor)
