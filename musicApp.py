@@ -44,6 +44,7 @@ def help():
     print("\t'collection add': to add a song, album, artist to your collection")
     print("\t'play': to play a song from the entire library")
     print("\t'add to database': add a song, album or artist to the overall database")
+    print("\t'top 10': retrieve the top 10 most popular songs, albums, or artists in the database")
     print("\t'quit': to exit the application")
     
 
@@ -439,6 +440,7 @@ def get_max_song_user(userID, cursor):
     """
     This function is used to search for and print the top 5 most played songs of a user
     param userID: id of user to search on 
+    param cursor: used to send queries to the database
     """
     query = '''SELECT SONG_ID, COUNT(*) AS C FROM PLAY_DATES
             WHERE USER_ID=\'''' + str(userID) + "\' GROUP BY SONG_ID"
@@ -465,32 +467,128 @@ def get_max_artist_user(userID, cursor):
     """
     This function is used to search for and print the top 3 most played artists of a user
     param userID: id of user to search on 
+    param cursor: used to send queries to the database
     """
-    query = '''SELECT PLAY_DATES.SONG_ID 
-            FROM PLAY_DATES WHERE USER_ID=\'''' + str(userID)+ '''\' AS TEMP 
-            INNER JOIN SONG_ARTISTS ON TEMP.SONG_ID=SONG_ARTISTS.SONG_ID'''
+    query = '''SELECT SONG_ARTISTS.ARTIST_ID, PLAY_DATES.SONG_ID, COUNT(*) AS C 
+            FROM PLAY_DATES 
+            INNER JOIN SONG_ARTISTS ON PLAY_DATES.SONG_ID=SONG_ARTISTS.SONG_ID 
+            WHERE PLAY_DATES.USER_ID=\'''' + str(userID)+ '''\'
+            GROUP BY SONG_ARTISTS.ARTIST_ID, PLAY_DATES.SONG_ID
+            ORDER BY COUNT(SONG_ARTISTS.ARTIST_ID)'''
+
     cursor.execute(query)
     songList = cursor.fetchall()
     if(len(songList)==0):
         print("Songs not found!")
         return
-    """
+    
     query = '''SELECT USERNAME FROM USERS
             WHERE USER_ID=\'''' + str(userID) + "\'"
     cursor.execute(query)
     username = cursor.fetchall()[0][0]
 
-    print("The top 5 songs played by", username, "are...")
-    for i in range(5):
-        query = '''SELECT TITLE FROM SONGS
-            WHERE SONG_ID=\'''' + str(songList[len(songList)-1-i][0]) + "\'"
+    print("The top 3 artists played by", username, "are...")
+    for i in range(3):
+        query = '''SELECT NAME FROM ARTISTS
+            WHERE ARTIST_ID=\'''' + str(songList[len(songList)-1-i][0]) + "\'"
         cursor.execute(query)
-        title = cursor.fetchall()[0][0]
-        print(title)
-    """
-    for x in songList:
-        print(x)
+        artist = cursor.fetchall()[0][0]
+        print(artist)
 
+def get_max_genre_user(userID, cursor):
+    """
+    This function is used to search for and print the top most played genre of a user
+    param userID: id of user to search on 
+    param cursor: used to send queries to the database
+    """
+    query = '''SELECT SONGS.GENRE_ID, PLAY_DATES.SONG_ID, COUNT(*) AS C 
+            FROM PLAY_DATES 
+            INNER JOIN SONGS ON PLAY_DATES.SONG_ID=SONGS.SONG_ID 
+            WHERE PLAY_DATES.USER_ID=\'''' + str(userID)+ '''\'
+            GROUP BY SONGS.GENRE_ID, PLAY_DATES.SONG_ID
+            ORDER BY COUNT(SONGS.GENRE_ID)'''
+
+    cursor.execute(query)
+    songList = cursor.fetchall()
+    if(len(songList)==0):
+        print("Songs not found!")
+        return
+    
+    query = '''SELECT USERNAME FROM USERS
+            WHERE USER_ID=\'''' + str(userID) + "\'"
+    cursor.execute(query)
+    username = cursor.fetchall()[0][0]
+
+    print("The top genre played by", username, "are...")
+    for i in range(1):
+        query = '''SELECT NAME FROM GENRES
+            WHERE GENRE_ID=\'''' + str(songList[len(songList)-1-i][0]) + "\'"
+        cursor.execute(query)
+        genre = cursor.fetchall()[0][0]
+        print(genre)
+
+
+
+def top10Songs(cursor):
+    """
+    This function returns the top 10 most-played songs in the database.
+    param cursor: used to send queries to the database
+    """
+    query = '''SELECT play_dates.song_id, songs.title, COUNT(play_dates.song_id)
+                FROM play_dates INNER JOIN songs
+                ON play_dates.song_id = songs.song_id
+                GROUP BY play_dates.song_id, songs.title
+                ORDER BY COUNT(play_dates.song_id) DESC, play_dates.song_id'''
+    cursor.execute(query)
+    topSongs = cursor.fetchall()
+    print("\nTop 10 Most-Played Songs:\n")
+    for num in range(0, 10):
+        print("\t#%d - %s - [Play Count: %d]" % ((num + 1), topSongs[num][1], topSongs[num][2]))
+    print("")
+    
+def top10Artists(cursor):
+    """
+    This function returns the top 10 most-played artists in the database.
+    param cursor: used to send queries to the database
+    """
+    query = '''SELECT temp.play_count, artists.artist_id, artists.name
+                FROM artists INNER JOIN (
+                    SELECT COUNT(play_dates.song_id) AS play_count, song_artists.artist_id
+                    FROM play_dates INNER JOIN song_artists
+                    ON play_dates.song_id = song_artists.song_id
+                    GROUP BY song_artists.artist_id
+                    ) AS temp
+                ON temp.artist_id = artists.artist_id
+                GROUP BY temp.play_count, artists.artist_id
+                ORDER BY temp.play_count DESC'''
+    cursor.execute(query)
+    topArtists = cursor.fetchall()
+    print("\nTop 10 Most-Played Artists:\n")
+    for num in range(0, 10):
+        print("\t#%d - %s - [Total Play Count: %d]" % ((num + 1), topArtists[num][2], topArtists[num][0]))
+    print("")
+
+def top10Albums(cursor):
+    """
+    This function returns the top 10 most-played albums in the database.
+    param cursor: used to send queries to the database
+    """
+    query = '''SELECT temp.play_count, albums.album_id, albums.name
+                FROM albums INNER JOIN (
+                    SELECT COUNT(play_dates.song_id) AS play_count, album_songs.album_id
+                    FROM play_dates INNER JOIN album_songs
+                    ON play_dates.song_id = album_songs.song_id
+                    GROUP BY album_songs.album_id
+                    ) AS temp
+                ON temp.album_id = albums.album_id
+                GROUP BY temp.play_count, albums.album_id
+                ORDER BY temp.play_count DESC'''
+    cursor.execute(query)
+    topAlbums = cursor.fetchall()
+    print("\nTop 10 Most-Played Albums:\n")
+    for num in range(0, 10):
+        print("\t#%d - %s - [Accumulated Track Plays: %d]" % ((num + 1), topAlbums[num][2], topAlbums[num][0]))
+    print("")
 
 if __name__ == "__main__":
     """
@@ -502,7 +600,7 @@ if __name__ == "__main__":
     user_id = 0
     username = ""
     #Signup or Login
-    get_max_artist_user(11, sql_cursor)
+    get_max_genre_user(11, sql_cursor)
     """
     while True:
         initial = input("\nEnter 'login', 'signup', 'add to database' or 'quit': ")
@@ -591,6 +689,21 @@ if __name__ == "__main__":
         elif(command=="play"):
             songName = input("Enter the name of the song to be played: ")
             playSong(songName, sql_cursor, sql_connection, user_id)
+        elif(command=="top 10"):
+            while True:
+                command2 = input("\nEnter 'songs', 'artists', or 'albums': ")
+                if (command2 == "songs"):
+                    top10Songs(sql_cursor)
+                    break
+                elif (command2 == "artists"):
+                    top10Artists(sql_cursor)
+                    break
+                elif (command2 == "albums"):
+                    top10Albums(sql_cursor)
+                    break
+                else:
+                    print("Incorrect Command! Try Again!")
+                    continue
         elif(command=='quit'):
             print("\nApplication Closed Successfully")
             break
