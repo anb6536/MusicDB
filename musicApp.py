@@ -435,6 +435,61 @@ def addArtist(cursor, connection):
     connection.commit()
     print("Artist \'" + name + "\' was added to the database successfully")
 
+def get_max_song_user(userID, cursor):
+    """
+    This function is used to search for and print the top 5 most played songs of a user
+    param userID: id of user to search on 
+    """
+    query = '''SELECT SONG_ID, COUNT(*) AS C FROM PLAY_DATES
+            WHERE USER_ID=\'''' + str(userID) + "\' GROUP BY SONG_ID"
+    cursor.execute(query)
+    songList = cursor.fetchall()
+    if(len(songList)==0):
+        print("Songs not found!")
+        return
+    
+    query = '''SELECT USERNAME FROM USERS
+            WHERE USER_ID=\'''' + str(userID) + "\'"
+    cursor.execute(query)
+    username = cursor.fetchall()[0][0]
+
+    print("The top 5 songs played by", username, "are...")
+    for i in range(5):
+        query = '''SELECT TITLE FROM SONGS
+            WHERE SONG_ID=\'''' + str(songList[len(songList)-1-i][0]) + "\'"
+        cursor.execute(query)
+        title = cursor.fetchall()[0][0]
+        print(title)
+
+def get_max_artist_user(userID, cursor):
+    """
+    This function is used to search for and print the top 3 most played artists of a user
+    param userID: id of user to search on 
+    """
+    query = '''SELECT PLAY_DATES.SONG_ID 
+            FROM PLAY_DATES WHERE USER_ID=\'''' + str(userID)+ '''\' AS TEMP 
+            INNER JOIN SONG_ARTISTS ON TEMP.SONG_ID=SONG_ARTISTS.SONG_ID'''
+    cursor.execute(query)
+    songList = cursor.fetchall()
+    if(len(songList)==0):
+        print("Songs not found!")
+        return
+    """
+    query = '''SELECT USERNAME FROM USERS
+            WHERE USER_ID=\'''' + str(userID) + "\'"
+    cursor.execute(query)
+    username = cursor.fetchall()[0][0]
+
+    print("The top 5 songs played by", username, "are...")
+    for i in range(5):
+        query = '''SELECT TITLE FROM SONGS
+            WHERE SONG_ID=\'''' + str(songList[len(songList)-1-i][0]) + "\'"
+        cursor.execute(query)
+        title = cursor.fetchall()[0][0]
+        print(title)
+    """
+    for x in songList:
+        print(x)
 
 
 if __name__ == "__main__":
@@ -443,10 +498,12 @@ if __name__ == "__main__":
     respective functions to carry out the operation
     """
     sql_connection, sql_cursor = connect()
-    print("\nWelcome to Music Player by Straigh Outta Database!")
+    print("\nWelcome to Music Player by Straight Outta Database!")
     user_id = 0
     username = ""
     #Signup or Login
+    get_max_artist_user(11, sql_cursor)
+    """
     while True:
         initial = input("\nEnter 'login', 'signup', 'add to database' or 'quit': ")
         if(initial=='login'):
@@ -541,5 +598,6 @@ if __name__ == "__main__":
             print("\nIncorrect command")
             help()
             print("\nTry Again")
+    """        
 
     close(sql_connection, sql_cursor)
