@@ -1,6 +1,7 @@
 import psycopg2
 import datetime
 import time
+import random
 
 """
 Music App to manipulate the Database
@@ -455,12 +456,14 @@ def getMaxSongUser(userID, cursor):
     cursor.execute(query)
     username = cursor.fetchall()[0][0]
 
+    top5songs = []
     print("The top 5 songs played by", username, "are...")
     for i in range(5):
         query = '''SELECT TITLE FROM SONGS
             WHERE SONG_ID=\'''' + str(songList[len(songList)-1-i][0]) + "\'"
         cursor.execute(query)
         title = cursor.fetchall()[0][0]
+        top5songs.append(songList[len(songList)-1-i][0])
         print(title)
 
 def getMaxArtistUser(userID, cursor):
@@ -487,13 +490,18 @@ def getMaxArtistUser(userID, cursor):
     cursor.execute(query)
     username = cursor.fetchall()[0][0]
 
+    top3artists = []
     print("The top 3 artists played by", username, "are...")
     for i in range(3):
         query = '''SELECT NAME FROM ARTISTS
             WHERE ARTIST_ID=\'''' + str(songList[len(songList)-1-i][0]) + "\'"
         cursor.execute(query)
         artist = cursor.fetchall()[0][0]
+        top3artists.append(songList[len(songList)-1-i][0])
         print(artist)
+    
+    return top3artists
+    
 
 def getMaxGenreUser(userID, cursor):
     """
@@ -526,8 +534,51 @@ def getMaxGenreUser(userID, cursor):
         cursor.execute(query)
         genre = cursor.fetchall()[0][0]
         print(genre)
+    
+    return songList[len(songList)-1-i][0]
 
+def songRecGenre(userID, cursor):
+    """
+    This function is used to recommend a song to a user based on their genre listening history
+    param userID: id of user to search on 
+    param cursor: used to send queries to the database
+    """
+    genre = getMaxGenreUser(userID, cursor)
+    query = '''SELECT SONG_ID FROM SONGS
+                WHERE GENRE_ID=\'''' + str(genre) + '''\''''
+    cursor.execute(query) 
+    songList = cursor.fetchall()
+    
+    index = random.randint(0, len(songList)-1)
 
+    print("Here's a song recommendation based on your genre listening history...")
+    query = '''SELECT TITLE FROM SONGS
+            WHERE SONG_ID=\'''' + str(songList[index][0]) + "\'"
+    cursor.execute(query)
+    title = cursor.fetchall()[0][0]
+    print(title)
+
+def songRecArtist(userID, cursor):
+    """
+    This function is used to recommend a song to a user based on their artist listening history
+    param userID: id of user to search on 
+    param cursor: used to send queries to the database
+    """
+    artistList = getMaxArtistUser(userID, cursor)
+    artist = artistList[random.randint(0,3)]
+    query = '''SELECT SONG_ID FROM SONG_ARTISTS
+                WHERE ARTIST_ID=\'''' + str(artist) + '''\''''
+    cursor.execute(query) 
+    songList = cursor.fetchall()
+    
+    index = random.randint(0, len(songList)-1)
+
+    print("Here's a song recommendation based on your artist listening history...")
+    query = '''SELECT TITLE FROM SONGS
+            WHERE SONG_ID=\'''' + str(songList[index][0]) + "\'"
+    cursor.execute(query)
+    title = cursor.fetchall()[0][0]
+    print(title)
 
 def top10Songs(cursor):
     """
@@ -600,6 +651,8 @@ if __name__ == "__main__":
     user_id = 0
     username = ""
     #Signup or Login
+    songRecArtist(11, sql_cursor)
+    """
     while True:
         initial = input("\nEnter 'login', 'signup', 'add to database' or 'quit': ")
         if(initial=='login'):
@@ -709,5 +762,5 @@ if __name__ == "__main__":
             print("\nIncorrect command")
             help()
             print("\nTry Again")       
-
+    """
     close(sql_connection, sql_cursor)
