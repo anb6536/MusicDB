@@ -22,6 +22,7 @@ def connect():
         return connection, cursor
     except(Exception, psycopg2.Error):
         print("Error connecting to the database")
+        exit(1)
 
 
 def close(connection, cursor):
@@ -437,6 +438,9 @@ def addArtist(cursor, connection):
     connection.commit()
     print("Artist \'" + name + "\' was added to the database successfully")
 
+
+###############################################################################################################################################
+
 def getMaxSongUser(userID, cursor):
     """
     This function is used to search for and print the top 5 most played songs of a user
@@ -738,21 +742,54 @@ if __name__ == "__main__":
         elif(command=="play"):
             songName = input("Enter the name of the song to be played: ")
             playSong(songName, sql_cursor, sql_connection, user_id)
-        elif(command=="top 10"):
+        elif(command=="analytics"):
             while True:
-                command2 = input("\nEnter 'songs', 'artists', or 'albums': ")
-                if (command2 == "songs"):
-                    top10Songs(sql_cursor)
+                secondInput = input("Enter 'most played', 'recommendation' or 'top 10': ")
+                if(command=="top 10"):
+                    while True:
+                        command2 = input("\nEnter 'songs', 'artists', or 'albums': ")
+                        if (command2 == "songs"):
+                            top10Songs(sql_cursor)
+                            break
+                        elif (command2 == "artists"):
+                            top10Artists(sql_cursor)
+                            break
+                        elif (command2 == "albums"):
+                            top10Albums(sql_cursor)
+                            break
+                        else:
+                            print("Incorrect Command! Try Again!")
+                            continue
                     break
-                elif (command2 == "artists"):
-                    top10Artists(sql_cursor)
+                elif(command=="most played"):
+                    while True:
+                        command2 = input("\nEnter 'songs', 'artists', or 'genres': ")
+                        if (command2=="songs"):
+                            getMaxSongUser(user_id, sql_cursor)
+                            break
+                        elif (command2=="artists"):
+                            getMaxArtistUser(user_id, sql_cursor)
+                            break
+                        elif (command2 == "genres"):
+                            getMaxGenreUser(user_id, sql_cursor)
+                            break
+                        else:
+                            print("Incorrect Command! Try Again!")
+                            continue
                     break
-                elif (command2 == "albums"):
-                    top10Albums(sql_cursor)
+                elif(command=="recommendation"):
+                    while True:
+                        command2 = input("\nEnter 'genre', or 'artists': ")
+                        if (command2=="genre"):
+                            songRecGenre(user_id, sql_cursor)
+                            break
+                        elif (command2 == "artists"):
+                            songRecArtist(user_id, sql_cursor)
+                            break
+                        else:
+                            print("Incorrect Command! Try Again!")
+                            continue
                     break
-                else:
-                    print("Incorrect Command! Try Again!")
-                    continue
         elif(command=='quit'):
             print("\nApplication Closed Successfully")
             break
