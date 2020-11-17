@@ -46,7 +46,10 @@ def help():
     print("\t'collection add': to add a song, album, artist to your collection")
     print("\t'play': to play a song from the entire library")
     print("\t'add to database': add a song, album or artist to the overall database")
-    print("\t'top 10': retrieve the top 10 most popular songs, albums, or artists in the database")
+    print("\t'analytics': shows the analytics, with top songs and recommendations")
+    print("\t\t'top 10': retrieve the top 10 most popular songs, albums, or artists in the database")
+    print("\t\t'most played': shows the most played songs, artist or genre by the user")
+    print("\t\t'recommendation': shows recommended songs based on genre and srtists")
     print("\t'quit': to exit the application")
     
 
@@ -745,7 +748,7 @@ if __name__ == "__main__":
         elif(command=="analytics"):
             while True:
                 secondInput = input("Enter 'most played', 'recommendation' or 'top 10': ")
-                if(command=="top 10"):
+                if(secondInput=="top 10"):
                     while True:
                         command2 = input("\nEnter 'songs', 'artists', or 'albums': ")
                         if (command2 == "songs"):
@@ -761,7 +764,7 @@ if __name__ == "__main__":
                             print("Incorrect Command! Try Again!")
                             continue
                     break
-                elif(command=="most played"):
+                elif(secondInput=="most played"):
                     while True:
                         command2 = input("\nEnter 'songs', 'artists', or 'genres': ")
                         if (command2=="songs"):
@@ -777,7 +780,7 @@ if __name__ == "__main__":
                             print("Incorrect Command! Try Again!")
                             continue
                     break
-                elif(command=="recommendation"):
+                elif(secondInput=="recommendation"):
                     while True:
                         command2 = input("\nEnter 'genre', or 'artists': ")
                         if (command2=="genre"):
