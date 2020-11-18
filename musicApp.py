@@ -477,7 +477,7 @@ def getMaxSongUser(userID, cursor):
             WHERE SONG_ID=\'''' + str(songList[i][0]) + "\'"
         cursor.execute(query)
         title = cursor.fetchall()[0][0]
-        top5songs.append(songList[len(songList)-1-i][0])
+        top5songs.append(songList[i][0])
         print("\t#%d - %s" % ((i + 1), title))
 
 def getMaxArtistUser(userID, cursor):
