@@ -561,7 +561,7 @@ def songRecGenre(userID, cursor):
     genreList = getMaxGenreUser(userID, cursor)
     genre = genreList[random.randint(0, 3)]
     query = '''SELECT SONG_ID FROM SONGS
-                WHERE GENRE_ID=\'''' + str(genre[0]) + '''\''''
+                WHERE GENRE_ID=\'''' + str(genre) + '''\''''
     cursor.execute(query) 
     songList = cursor.fetchall()
     
