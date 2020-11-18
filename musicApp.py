@@ -523,16 +523,20 @@ def getMaxGenreUser(userID, cursor):
     param userID: id of user to search on 
     param cursor: used to send queries to the database
     """
-    query = '''SELECT SONGS.GENRE_ID, PLAY_DATES.SONG_ID, COUNT(*) AS C 
-            FROM PLAY_DATES 
-            INNER JOIN SONGS ON PLAY_DATES.SONG_ID=SONGS.SONG_ID 
-            WHERE PLAY_DATES.USER_ID=\'''' + str(userID)+ '''\'
-            GROUP BY SONGS.GENRE_ID, PLAY_DATES.SONG_ID
-            ORDER BY COUNT(SONGS.GENRE_ID)'''
+    query = '''SELECT genres.genre_id, genres.name, COUNT(temp.genre_id) AS count
+                FROM genres INNER JOIN (
+                    SELECT play_dates.song_id, songs.genre_id
+                    FROM play_dates INNER JOIN songs
+                    ON play_dates.song_id = songs.song_id
+                    WHERE play_dates.user_id = ''' + str(userID) + '''
+                    ) AS temp
+                ON genres.genre_id = temp.genre_id
+                GROUP BY genres.genre_id
+                ORDER BY count DESC'''
 
     cursor.execute(query)
-    songList = cursor.fetchall()
-    if(len(songList)==0):
+    genreList = cursor.fetchall()
+    if(len(genreList)==0):
         print("Songs not found!")
         return
     
@@ -541,15 +545,11 @@ def getMaxGenreUser(userID, cursor):
     cursor.execute(query)
     username = cursor.fetchall()[0][0]
 
-    print("The top genre played by", username, "are...")
-    for i in range(1):
-        query = '''SELECT NAME FROM GENRES
-            WHERE GENRE_ID=\'''' + str(songList[len(songList)-1-i][0]) + "\'"
-        cursor.execute(query)
-        genre = cursor.fetchall()[0][0]
-        print(genre)
+    print("The top genres played by "+ str(username) + " are...")
+    for i in range(3):
+        print("\t#%d - %s" % ((i + 1), genreList[i][1]))
     
-    return songList[len(songList)-1-i][0]
+    return genreList[0][0]
 
 def songRecGenre(userID, cursor):
     """
