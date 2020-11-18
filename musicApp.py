@@ -545,11 +545,13 @@ def getMaxGenreUser(userID, cursor):
     cursor.execute(query)
     username = cursor.fetchall()[0][0]
 
+    top3genres = []
     print("The top genres played by "+ str(username) + " are...")
     for i in range(3):
+        top3genres.append(genreList[i][0])
         print("\t#%d - %s" % ((i + 1), genreList[i][1]))
     
-    return genreList[0][0]
+    return genreList
 
 def songRecGenre(userID, cursor):
     """
@@ -557,9 +559,10 @@ def songRecGenre(userID, cursor):
     param userID: id of user to search on 
     param cursor: used to send queries to the database
     """
-    genre = getMaxGenreUser(userID, cursor)
+    genreList = getMaxGenreUser(userID, cursor)
+    genre = genreList[random.randint(0, 3)]
     query = '''SELECT SONG_ID FROM SONGS
-                WHERE GENRE_ID=\'''' + str(genre) + '''\''''
+                WHERE GENRE_ID=\'''' + str(genre[0]) + '''\''''
     cursor.execute(query) 
     songList = cursor.fetchall()
     
