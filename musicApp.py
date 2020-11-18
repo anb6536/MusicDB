@@ -486,12 +486,16 @@ def getMaxArtistUser(userID, cursor):
     param userID: id of user to search on 
     param cursor: used to send queries to the database
     """
-    query = '''SELECT SONG_ARTISTS.ARTIST_ID, PLAY_DATES.SONG_ID, COUNT(*) AS C 
-            FROM PLAY_DATES 
-            INNER JOIN SONG_ARTISTS ON PLAY_DATES.SONG_ID=SONG_ARTISTS.SONG_ID 
-            WHERE PLAY_DATES.USER_ID=\'''' + str(userID)+ '''\'
-            GROUP BY SONG_ARTISTS.ARTIST_ID, PLAY_DATES.SONG_ID
-            ORDER BY COUNT(SONG_ARTISTS.ARTIST_ID)'''
+    query = '''SELECT artists.artist_id, artists.name, COUNT(temp.artist_id) as count
+                FROM artists INNER JOIN (
+                    SELECT play_dates.song_id, song_artists.artist_id
+                    FROM play_dates INNER JOIN song_artists
+                    ON play_dates.song_id = song_artists.song_id
+                    WHERE play_dates.user_id = ''' + str(userID) + '''
+                    ) AS temp
+                ON artists.artist_id = temp.artist_id
+                GROUP BY artists.artist_id, artists.name
+                ORDER BY count DESC'''
 
     cursor.execute(query)
     songList = cursor.fetchall()
@@ -507,12 +511,8 @@ def getMaxArtistUser(userID, cursor):
     top3artists = []
     print("The top 3 artists played by", username, "are...")
     for i in range(3):
-        query = '''SELECT NAME FROM ARTISTS
-            WHERE ARTIST_ID=\'''' + str(songList[len(songList)-1-i][0]) + "\'"
-        cursor.execute(query)
-        artist = cursor.fetchall()[0][0]
-        top3artists.append(songList[len(songList)-1-i][0])
-        print(artist)
+        top3artists.append(songList[i][0])
+        print("\t#%d - %s" % ((i + 1), songList[i][1]))
     
     return top3artists
     
@@ -663,47 +663,51 @@ if __name__ == "__main__":
     sql_connection, sql_cursor = connect()
     print("\nWelcome to Music Player by Straight Outta Database!")
     user_id = 0
-    username = ""
-    #Signup or Login
-    while True:
-        initial = input("\nEnter 'login', 'signup', 'add to database' or 'quit': ")
-        if(initial=='login'):
-            username = input("\nUsername: ")
-            password = input("Password: ")
-            user_id = login(username, password, sql_cursor)
-            if(user_id!=None):
-                break
-            else:
-                continue
-        elif(initial=='signup'):
-            username = input("\nEnter a username: ")
-            password = input("\nEnter a password: ")
-            user_id = signup(username, password, sql_cursor, sql_connection)
-            if(user_id!=None):
-                break
-            else:
-                continue
-        elif(initial == "add to database"):
-            while True:
-                command2 = input("Enter 'song', 'album' or 'artist' to add to the database: ")
-                if( command2 == "song"):
-                    addSong(sql_cursor, sql_connection)
-                    break
-                elif (command2 == "album"):
-                    addAlbum(sql_cursor, sql_connection)
-                    break
-                elif (command2 == "artist"):
-                    addArtist(sql_cursor, sql_connection)
-                    break
-                else:
-                    print("Incorrect command, please try again!")
-                    continue
-        elif(initial == "quit"):
-            print("Application Closed Successfully")
-            close(sql_connection, sql_cursor)
-            exit(0)
-        else:
-            print("Wrong command, Try again!")
+    username = "bgaliero0"
+    # TEST TEST TEST
+    user_id = login(username, "0Hb7rjk", sql_cursor)
+    # TEST TEST TEST
+    
+    # #Signup or Login
+    # while True:
+    #     initial = input("\nEnter 'login', 'signup', 'add to database' or 'quit': ")
+    #     if(initial=='login'):
+    #         username = input("\nUsername: ")
+    #         password = input("Password: ")
+    #         user_id = login(username, password, sql_cursor)
+    #         if(user_id!=None):
+    #             break
+    #         else:
+    #             continue
+    #     elif(initial=='signup'):
+    #         username = input("\nEnter a username: ")
+    #         password = input("\nEnter a password: ")
+    #         user_id = signup(username, password, sql_cursor, sql_connection)
+    #         if(user_id!=None):
+    #             break
+    #         else:
+    #             continue
+    #     elif(initial == "add to database"):
+    #         while True:
+    #             command2 = input("Enter 'song', 'album' or 'artist' to add to the database: ")
+    #             if( command2 == "song"):
+    #                 addSong(sql_cursor, sql_connection)
+    #                 break
+    #             elif (command2 == "album"):
+    #                 addAlbum(sql_cursor, sql_connection)
+    #                 break
+    #             elif (command2 == "artist"):
+    #                 addArtist(sql_cursor, sql_connection)
+    #                 break
+    #             else:
+    #                 print("Incorrect command, please try again!")
+    #                 continue
+    #     elif(initial == "quit"):
+    #         print("Application Closed Successfully")
+    #         close(sql_connection, sql_cursor)
+    #         exit(0)
+    #     else:
+    #         print("Wrong command, Try again!")
     
     while True:
         command = input("\nEnter a command (type 'help' for help): ")
