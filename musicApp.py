@@ -8,6 +8,11 @@ Music App to manipulate the Database
 Authors: Aahish Balimane, Michael Berger, Asha Kadagala
 """
 
+def printQuery(query):
+    print("\n=====")
+    print(query)
+    print("=====\n")
+
 def connect():
     """
     Function to connect to our database with our DB Credentials
@@ -450,8 +455,8 @@ def getMaxSongUser(userID, cursor):
     param userID: id of user to search on 
     param cursor: used to send queries to the database
     """
-    query = '''SELECT SONG_ID, COUNT(*) AS C FROM PLAY_DATES
-            WHERE USER_ID=\'''' + str(userID) + "\' GROUP BY SONG_ID"
+    query = '''SELECT SONG_ID, COUNT(*) AS count FROM PLAY_DATES
+            WHERE USER_ID=\'''' + str(userID) + "\' GROUP BY SONG_ID ORDER BY count DESC"
     cursor.execute(query)
     songList = cursor.fetchall()
     if(len(songList)==0):
@@ -467,11 +472,11 @@ def getMaxSongUser(userID, cursor):
     print("The top 5 songs played by", username, "are...")
     for i in range(5):
         query = '''SELECT TITLE FROM SONGS
-            WHERE SONG_ID=\'''' + str(songList[len(songList)-1-i][0]) + "\'"
+            WHERE SONG_ID=\'''' + str(songList[i][0]) + "\'"
         cursor.execute(query)
         title = cursor.fetchall()[0][0]
         top5songs.append(songList[len(songList)-1-i][0])
-        print(title)
+        print("\t#%d - %s" % ((i + 1), title))
 
 def getMaxArtistUser(userID, cursor):
     """
