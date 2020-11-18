@@ -54,7 +54,7 @@ def help():
     print("\t'analytics': shows the analytics, with top songs and recommendations")
     print("\t\t'top 10': retrieve the top 10 most popular songs, albums, or artists in the database")
     print("\t\t'most played': shows the most played songs, artist or genre by the user")
-    print("\t\t'recommendation': shows recommended songs based on genre and srtists")
+    print("\t\t'recommendation': shows recommended songs based on genre or artists")
     print("\t'quit': to exit the application")
     
 
@@ -447,7 +447,9 @@ def addArtist(cursor, connection):
     print("Artist \'" + name + "\' was added to the database successfully")
 
 
-###############################################################################################################################################
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Analytics Functions
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 def getMaxSongUser(userID, cursor):
     """
