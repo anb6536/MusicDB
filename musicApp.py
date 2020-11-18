@@ -664,50 +664,50 @@ if __name__ == "__main__":
     print("\nWelcome to Music Player by Straight Outta Database!")
     user_id = 0
     username = "bgaliero0"
-    # TEST TEST TEST
-    user_id = login(username, "0Hb7rjk", sql_cursor)
-    # TEST TEST TEST
+    # # TEST TEST TEST
+    # user_id = login(username, "0Hb7rjk", sql_cursor)
+    # # TEST TEST TEST
     
-    # #Signup or Login
-    # while True:
-    #     initial = input("\nEnter 'login', 'signup', 'add to database' or 'quit': ")
-    #     if(initial=='login'):
-    #         username = input("\nUsername: ")
-    #         password = input("Password: ")
-    #         user_id = login(username, password, sql_cursor)
-    #         if(user_id!=None):
-    #             break
-    #         else:
-    #             continue
-    #     elif(initial=='signup'):
-    #         username = input("\nEnter a username: ")
-    #         password = input("\nEnter a password: ")
-    #         user_id = signup(username, password, sql_cursor, sql_connection)
-    #         if(user_id!=None):
-    #             break
-    #         else:
-    #             continue
-    #     elif(initial == "add to database"):
-    #         while True:
-    #             command2 = input("Enter 'song', 'album' or 'artist' to add to the database: ")
-    #             if( command2 == "song"):
-    #                 addSong(sql_cursor, sql_connection)
-    #                 break
-    #             elif (command2 == "album"):
-    #                 addAlbum(sql_cursor, sql_connection)
-    #                 break
-    #             elif (command2 == "artist"):
-    #                 addArtist(sql_cursor, sql_connection)
-    #                 break
-    #             else:
-    #                 print("Incorrect command, please try again!")
-    #                 continue
-    #     elif(initial == "quit"):
-    #         print("Application Closed Successfully")
-    #         close(sql_connection, sql_cursor)
-    #         exit(0)
-    #     else:
-    #         print("Wrong command, Try again!")
+    #Signup or Login
+    while True:
+        initial = input("\nEnter 'login', 'signup', 'add to database' or 'quit': ")
+        if(initial=='login'):
+            username = input("\nUsername: ")
+            password = input("Password: ")
+            user_id = login(username, password, sql_cursor)
+            if(user_id!=None):
+                break
+            else:
+                continue
+        elif(initial=='signup'):
+            username = input("\nEnter a username: ")
+            password = input("\nEnter a password: ")
+            user_id = signup(username, password, sql_cursor, sql_connection)
+            if(user_id!=None):
+                break
+            else:
+                continue
+        elif(initial == "add to database"):
+            while True:
+                command2 = input("Enter 'song', 'album' or 'artist' to add to the database: ")
+                if( command2 == "song"):
+                    addSong(sql_cursor, sql_connection)
+                    break
+                elif (command2 == "album"):
+                    addAlbum(sql_cursor, sql_connection)
+                    break
+                elif (command2 == "artist"):
+                    addArtist(sql_cursor, sql_connection)
+                    break
+                else:
+                    print("Incorrect command, please try again!")
+                    continue
+        elif(initial == "quit"):
+            print("Application Closed Successfully")
+            close(sql_connection, sql_cursor)
+            exit(0)
+        else:
+            print("Wrong command, Try again!")
     
     while True:
         command = input("\nEnter a command (type 'help' for help): ")
