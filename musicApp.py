@@ -515,7 +515,6 @@ def getMaxArtistUser(userID, cursor):
         print("\t#%d - %s" % ((i + 1), songList[i][1]))
     
     return top3artists
-    
 
 def getMaxGenreUser(userID, cursor):
     """
@@ -551,7 +550,7 @@ def getMaxGenreUser(userID, cursor):
         top3genres.append(genreList[i][0])
         print("\t#%d - %s" % ((i + 1), genreList[i][1]))
     
-    return genreList
+    return top3genres
 
 def songRecGenre(userID, cursor):
     """
